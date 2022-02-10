@@ -1,3 +1,4 @@
+# importing all important modules and functions
 import matplotlib.pyplot as plt
 from sklearn.datasets import fetch_openml
 from sklearn.neural_network import MLPClassifier
@@ -6,14 +7,15 @@ import warnings
 from sklearn.model_selection import train_test_split
 
 print("Downloading mnist dataset...")
-# Load data from https://www.openml.org/d/554
+# loading data from https://www.openml.org/d/554
 X, y = fetch_openml("mnist_784", version=1, return_X_y=True, as_frame=False)
 X = X / 255.0
 print("Download complete.")
 
-# Split data into train partition and test partition
+# makes train/test split 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0, test_size=0.7)
 
+# train an MLPClassifier on the training set
 mlp = MLPClassifier(
     hidden_layer_sizes=(40,),
     max_iter=8,
@@ -21,12 +23,9 @@ mlp = MLPClassifier(
     solver="sgd",
     verbose=10,
     random_state=1,
-    learning_rate_init=0.2,
-)
+    learning_rate_init=0.2,)
 
-# this example won't converge because of resource usage constraints on
-# our Continuous Integration infrastructure, so we catch the warning and
-# ignore it here
+# catches the warning and ignores Continuous Integration - minimum of iterrations is 200
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=ConvergenceWarning, module="sklearn")
     mlp.fit(X_train, y_train)
@@ -43,4 +42,3 @@ for coef, ax in zip(mlp.coefs_[0].T, axes.ravel()):
     ax.set_yticks(())
 
 plt.show()
-
